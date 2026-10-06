@@ -6,13 +6,20 @@ import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 type View = { zoom: number; x: number; y: number; rot: number };
 const INIT: View = { zoom: 1, x: 0, y: 0, rot: 0 };
 
-function clampView(v: View, img: HTMLElement | null, box: HTMLElement | null): View {
-  if (!img || !box) return v;
+function panLimit(v: View, img: HTMLElement | null, box: HTMLElement | null) {
+  if (!img || !box) return { mx: 0, my: 0 };
   const turned = Math.abs(v.rot / 90) % 2 === 1;
   const w = (turned ? img.offsetHeight : img.offsetWidth) * v.zoom;
   const h = (turned ? img.offsetWidth : img.offsetHeight) * v.zoom;
-  const mx = Math.max(0, (w - box.clientWidth) / 2);
-  const my = Math.max(0, (h - box.clientHeight) / 2);
+  return {
+    mx: Math.max(0, (w - box.clientWidth) / 2),
+    my: Math.max(0, (h - box.clientHeight) / 2),
+  };
+}
+
+function clampView(v: View, img: HTMLElement | null, box: HTMLElement | null): View {
+  if (!img || !box) return v;
+  const { mx, my } = panLimit(v, img, box);
   return {
     ...v,
     x: Math.min(mx, Math.max(-mx, v.x)),
@@ -40,6 +47,8 @@ function App() {
   const fit = (v: View) => clampView(v, imgRef.current, boxRef.current);
   const resetView = () => setView(INIT);
   const rotate = (deg: number) => setView((v) => fit({ ...v, rot: v.rot + deg }));
+  const { mx, my } = panLimit(view, imgRef.current, boxRef.current);
+  const canDrag = mx > 1 || my > 1;
 
   const go = (d: number) => {
     if (images.length < 2) return;
@@ -128,7 +137,7 @@ function App() {
   }
 
   function handlePointerDown(e: React.PointerEvent) {
-    if ((e.target as HTMLElement).closest("button")) return;
+    if (!images.length || (e.target as HTMLElement).closest("button")) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     drag.current = { x: e.clientX, y: e.clientY };
     setDragging(true);
@@ -204,7 +213,7 @@ function App() {
         onPointerMove={handlePointerMove}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
-        style={{ cursor: dragging ? "grabbing" : "grab" }}
+        style={{ cursor: dragging ? "grabbing" : canDrag ? "grab" : undefined }}
       >
         {!images.length && (
           <section className="viewer">
