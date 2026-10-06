@@ -175,8 +175,9 @@ function App() {
       >
         {!images.length && (
           <section className="viewer">
+            <span className="material-symbols-outlined">image_search</span>
             <h2>ImageViewer</h2>
-            <button className="open-btn" onClick={openImage}>Open Image</button>
+            <button className="open-btn" onClick={openImage}>Open File</button>
           </section>
         )}
 

@@ -2,8 +2,13 @@
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: "Inter";
+  src: url("./assets/fonts/Inter_24pt-Regular.ttf");
+}
+
 :root {
-  font-family: serif;
+  font-family: "Inter", sans-serif;
   line-height: 24px;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -77,6 +82,10 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.viewer span {
+  font-size: 100px;
 }
 
 .open-btn {
