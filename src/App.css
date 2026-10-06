@@ -18,20 +18,12 @@
 }
 
 .material-symbols-outlined {
+  transition: all 0.2s ease-in-out;
   font-variation-settings:
     'FILL' 1,
     'wght' 400,
     'GRAD' 0,
     'opsz' 24
-}
-
-button {
-  box-shadow: 0 0 5px 0 rgba(142, 142, 147, 0.4);
-  border: 0;
-  border-radius: 12px;
-  backdrop-filter: blur(2px);
-  cursor: pointer;
-  transition: all 0.25s ease-in-out;
 }
 
 body {
@@ -64,6 +56,10 @@ body {
 
 .tab span {
   margin: 4px;
+}
+
+.tab-btn .material-symbols-outlined:hover {
+  opacity: 0.5;
   cursor: pointer;
 }
 
@@ -94,11 +90,20 @@ body {
 .open-btn {
   width: 120px;
   height: 40px;
-  background: linear-gradient(to right, rgba(174, 174, 178, 0.847), #b9cbf7be);
-  color: rgb(242, 242, 247);
+  background: rgb(242, 242, 247);
+  box-shadow: 0 0 5px 0 rgba(142, 142, 147, 0.4);
+  border: 0;
+  border-radius: 12px;
+  backdrop-filter: blur(2px);
+  color: rgb(124, 124, 128);
+  cursor: pointer;
   font-size: 18px;
-  transition: all 1s ease-in-out;
+  transition: all 0.25s ease-in-out;
   z-index: 10;
+}
+
+.open-btn:hover {
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.5);
 }
 
 .prevImage,
@@ -110,8 +115,8 @@ body {
   align-items: center;
   padding: 0 1.5rem;
   color: rgb(226, 226, 226);
-  text-shadow: 0 0 5px rgb(44, 44, 46, 0.5);
   cursor: pointer;
+  text-shadow: 0 0 5px rgb(44, 44, 46, 0.5);
   opacity: 0;
   transition: opacity 0.4s ease-in-out;
   z-index: 30;
