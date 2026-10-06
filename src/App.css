@@ -21,7 +21,7 @@
 }
 
 button {
-  box-shadow: 0 0 5px 0 #2a292b52;
+  box-shadow: 0 0 5px 0 rgba(142, 142, 147, 0.4);
   border: 0;
   border-radius: 12px;
   backdrop-filter: blur(2px);
@@ -31,20 +31,20 @@ button {
 
 body {
   margin: 0;
-  background: linear-gradient(to bottom, #ffffff, #e2e2e2);
-  color: #676669;
+  background: linear-gradient(to bottom, rgb(255, 255, 255), rgb(226, 226, 226));
   user-select: none;
 }
 
 .container {
   width: 100vw;
-  height: calc(100vh - 40px);
+  height: 100vh;
   position: relative;
   overflow: hidden;
 }
 
 .tab {
-  background: #1B1B1B;
+  background: rgba(27, 27, 27, 0.7);
+  backdrop-filter: blur(8px);
   bottom: 0;
   width: 100vw;
   height: 40px;
@@ -64,10 +64,11 @@ body {
 
 .tab-btn {
   display: flex;
+  color: rgb(174, 174, 178);
 }
 
 .viewer {
-  color: #C1C1C0;
+  color: rgb(142, 142, 147);
   position: relative;
   z-index: 10;
   width: 100%;
@@ -81,8 +82,8 @@ body {
 .open-btn {
   width: 120px;
   height: 40px;
-  background: linear-gradient(to right, #84ebf8d8, #b9cbf7be);
-  color: #FFFFFF;
+  background: linear-gradient(to right, rgba(174, 174, 178, 0.847), #b9cbf7be);
+  color: rgb(242, 242, 247);
   font-size: 18px;
   transition: all 1s ease-in-out;
   z-index: 10;
@@ -96,8 +97,8 @@ body {
   display: flex;
   align-items: center;
   padding: 0 1.5rem;
-  color: #e2e2e2;
-  text-shadow: 0 0 5px #1B1B1B;
+  color: rgb(226, 226, 226);
+  text-shadow: 0 0 5px rgb(44, 44, 46, 0.5);
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.4s ease-in-out;
@@ -144,10 +145,12 @@ body {
   right: 12px;
   bottom: 52px;
   max-width: 320px;
-  padding: 12px 16px;
-  background: #1b1b1be6;
+  padding: 10px;
+  padding-top: 0;
+  background: rgba(27, 27, 27, 0.5);
   backdrop-filter: blur(8px);
-  color: #e2e2e2;
+  color: rgb(227, 227, 227);
+  border: 1px solid rgba(174, 174, 178, 0.637);
   border-radius: 18px;
   font-size: 14px;
   word-break: break-all;

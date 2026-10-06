@@ -124,6 +124,9 @@ function App() {
           <span className="material-symbols-outlined" onClick={() => rotate(90)}>rotate_90_degrees_cw</span>
         </div>
         <div className="tab-btn">
+          {images.length > 0 ? currentIndex + 1 : 0} / {images.length}
+        </div>
+        <div className="tab-btn">
           <span className="material-symbols-outlined" onClick={openImage}>folder_open</span>
           <span>|</span>
           <span className="material-symbols-outlined" onClick={() => setShowInfo((s) => !s)}>info</span>
@@ -132,6 +135,10 @@ function App() {
 
       {path && (
         <aside className={`info ${showInfo ? "open" : ""}`}>
+          <div>
+            <span className="material-symbols-outlined">info</span>
+            <p>info</p>
+          </div>
           <div>
             <span className="material-symbols-outlined">description</span>
             {path.split(/[\\/]/).pop()}
@@ -143,10 +150,6 @@ function App() {
           <div>
             <span className="material-symbols-outlined">hard_drive</span>
             {size != null ? fmt(size) : "…"}
-          </div>
-          <div>
-            <span className="material-symbols-outlined">photo_library</span>
-            {currentIndex + 1} / {images.length}
           </div>
         </aside>
       )}
