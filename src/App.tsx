@@ -123,7 +123,7 @@ function App() {
           <span className="material-symbols-outlined" onClick={() => rotate(-90)}>rotate_90_degrees_ccw</span>
           <span className="material-symbols-outlined" onClick={() => rotate(90)}>rotate_90_degrees_cw</span>
         </div>
-        <div className="tab-btn">
+        <div className="counter">
           {images.length > 0 ? currentIndex + 1 : 0} / {images.length}
         </div>
         <div className="tab-btn">

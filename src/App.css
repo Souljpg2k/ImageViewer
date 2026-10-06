@@ -67,9 +67,11 @@ body {
   cursor: pointer;
 }
 
-.tab-btn {
+.tab-btn,
+.counter {
   display: flex;
   color: rgb(174, 174, 178);
+  flex-shrink: 0;
 }
 
 .viewer {
