@@ -52,7 +52,7 @@ function App() {
       filters: [
         {
           name: "Images",
-          extensions: ["png", "jpg", "jpeg", "webp", "gif"],
+          extensions: ["png", "jpg", "jpeg", "jfif", "webp", "gif"],
         },
       ],
     });

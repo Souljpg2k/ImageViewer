@@ -12,7 +12,7 @@ fn list_images(file: String) -> Result<Vec<String>, String> {
             p.extension().and_then(|x| x.to_str()).is_some_and(|x| {
                 matches!(
                     x.to_lowercase().as_str(),
-                    "png" | "jpg" | "jpeg" | "webp" | "gif"
+                    "png" | "jpg" | "jpeg" | "jfif" | "webp" | "gif"
                 )
             })
         })
