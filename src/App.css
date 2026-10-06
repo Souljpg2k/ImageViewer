@@ -72,6 +72,7 @@ body {
   display: flex;
   color: rgb(174, 174, 178);
   flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .viewer {
@@ -171,6 +172,10 @@ body {
   transform-origin: bottom right;
   transition: opacity 0.25s ease, transform 0.25s ease;
   z-index: 40;
+}
+
+.info p {
+  margin: 0.5rem;
 }
 
 .info .material-symbols-outlined {

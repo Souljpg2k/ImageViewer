@@ -3,29 +3,70 @@ import { useRef, useState, useEffect } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 
+type View = { zoom: number; x: number; y: number; rot: number };
+const INIT: View = { zoom: 1, x: 0, y: 0, rot: 0 };
+
+function clampView(v: View, img: HTMLElement | null, box: HTMLElement | null): View {
+  if (!img || !box) return v;
+  const turned = Math.abs(v.rot / 90) % 2 === 1;
+  const w = (turned ? img.offsetHeight : img.offsetWidth) * v.zoom;
+  const h = (turned ? img.offsetWidth : img.offsetHeight) * v.zoom;
+  const mx = Math.max(0, (w - box.clientWidth) / 2);
+  const my = Math.max(0, (h - box.clientHeight) / 2);
+  return {
+    ...v,
+    x: Math.min(mx, Math.max(-mx, v.x)),
+    y: Math.min(my, Math.max(-my, v.y)),
+  };
+}
+
+const fmt = (b: number) =>
+  b < 1024 * 1024 ? `${(b / 1024).toFixed(1)} KB` : `${(b / 1024 / 1024).toFixed(2)} MB`;
 
 function App() {
   const [images, setImages] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [view, setView] = useState({ zoom: 1, x: 0, y: 0, rot: 0 });
-  const resetView = () => setView({ zoom: 1, x: 0, y: 0, rot: 0 });
-  const rotate = (deg: number) => setView((v) => ({ ...v, rot: v.rot + deg }));
-  const drag = useRef<{ x: number; y: number } | null>(null);
+  const [view, setView] = useState<View>(INIT);
   const [dragging, setDragging] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [dim, setDim] = useState<{ w: number; h: number } | null>(null);
   const [size, setSize] = useState<number | null>(null);
+
+  const drag = useRef<{ x: number; y: number } | null>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const boxRef = useRef<HTMLElement>(null);
+
   const path = images[currentIndex];
+  const fit = (v: View) => clampView(v, imgRef.current, boxRef.current);
+  const resetView = () => setView(INIT);
+  const rotate = (deg: number) => setView((v) => fit({ ...v, rot: v.rot + deg }));
+
+  const go = (d: number) => {
+    if (images.length < 2) return;
+    setCurrentIndex((i) => (i + d + images.length) % images.length);
+    resetView();
+  };
+  const goRef = useRef(go);
+
+  useEffect(() => {
+    goRef.current = go;
+  });
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.shiftKey && e.code === "KeyP") {
-        setView({ zoom: 1, x: 0, y: 0, rot: 0 });
+        setView(INIT);
       } else if (!e.shiftKey && e.code === "KeyQ") {
-        setView((v) => ({ ...v, rot: v.rot - 90 }));
+        setView((v) => clampView({ ...v, rot: v.rot - 90 }, imgRef.current, boxRef.current));
       } else if (!e.shiftKey && e.code === "KeyE") {
-        setView((v) => ({ ...v, rot: v.rot + 90 }));
+        setView((v) => clampView({ ...v, rot: v.rot + 90 }, imgRef.current, boxRef.current));
+      } else if (!e.shiftKey && e.code === "KeyI" && !e.repeat) {
+        setShowInfo((s) => !s);
+      } else if (!e.shiftKey && (e.code === "KeyA" || e.code === "ArrowLeft")) {
+        goRef.current(-1);
+      } else if (!e.shiftKey && (e.code === "KeyD" || e.code === "ArrowRight")) {
+        goRef.current(1);
       }
     }
     window.addEventListener("keydown", onKeyDown);
@@ -42,9 +83,6 @@ function App() {
       .catch(console.error);
     return () => { ok = false; };
   }, [path]);
-
-  const fmt = (b: number) =>
-    b < 1024 * 1024 ? `${(b / 1024).toFixed(1)} KB` : `${(b / 1024 / 1024).toFixed(2)} MB`;
 
   async function openImage() {
     const file = await open({
@@ -76,11 +114,6 @@ function App() {
     setCurrentIndex(0);
   }
 
-  const go = (d: number) => {
-    setCurrentIndex((i) => (i + d + images.length) % images.length);
-    resetView();
-  };
-
   function handleWheel(e: React.WheelEvent) {
     const rect = e.currentTarget.getBoundingClientRect();
     const cx = e.clientX - rect.left - rect.width / 2;
@@ -90,7 +123,7 @@ function App() {
     setView((v) => {
       const next = Math.min(5, Math.max(0.2, v.zoom * factor));
       const k = next / v.zoom;
-      return { ...v, zoom: next, x: cx - (cx - v.x) * k, y: cy - (cy - v.y) * k };
+      return fit({ ...v, zoom: next, x: cx - (cx - v.x) * k, y: cy - (cy - v.y) * k });
     });
   }
 
@@ -106,7 +139,7 @@ function App() {
     const dx = e.clientX - drag.current.x;
     const dy = e.clientY - drag.current.y;
     drag.current = { x: e.clientX, y: e.clientY };
-    setView((v) => ({ ...v, x: v.x + dx, y: v.y + dy }));
+    setView((v) => fit({ ...v, x: v.x + dx, y: v.y + dy }));
   }
 
   function endDrag() {
@@ -165,7 +198,7 @@ function App() {
         </>
       )}
 
-      <main className="container"
+      <main ref={boxRef} className="container"
         onWheel={handleWheel}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -181,9 +214,10 @@ function App() {
           </section>
         )}
 
-        <section className="image" onWheel={handleWheel}>
+        <section className="image">
           {images.length > 0 && (
             <img
+              ref={imgRef}
               src={convertFileSrc(images[currentIndex])}
               alt={`Image ${currentIndex + 1}`}
               draggable={false}
